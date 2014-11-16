@@ -154,6 +154,13 @@ function snapshot {
     mysqldump --defaults-extra-file=/host/mysql.cnf $DB_NAME \
     | gzip -c > $CALL_ROOT/db.sql.gz
 
+  sudo docker run --rm \
+    --link ${CLUSTER_NAME}_mongo:mongo \
+    --volume $CALL_ROOT:/host \
+    mongo \
+    mongoexport --db $DB_NAME --collection attachments \
+    | gzip -c > $CALL_ROOT/json.sql.gz
+
   tar czf $DIR/$NAME.$TS.$VERSION.tar.gz -C $CALL_ROOT --exclude=instance.sh --exclude=config.sh --exclude=database.yml --exclude=mysql.cnf .
   rm $CALL_ROOT/db.sql.gz
 
@@ -181,6 +188,12 @@ function import {
     --volume $CALL_ROOT:/host \
     mysql \
     mysql --defaults-extra-file=/host/mysql.cnf $DB_NAME
+
+  zcat $CALL_ROOT/mongo.json.gz | sudo docker run --rm -i \
+    --link ${CLUSTER_NAME}_mongo:mongo \
+    --volume $CALL_ROOT:/host \
+    mongo \
+    mongoimport --db $DB_NAME --collection attachments
 
   rm $CALL_ROOT/db.sql.gz
   rm -rf $CALL_ROOT.old
