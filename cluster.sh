@@ -165,7 +165,7 @@ function import {
 
   mv $CALL_ROOT.old/{instance.sh,config.sh,database.yml,mysql.cnf} $CALL_ROOT/
 
-  zcat $CALL_ROOT/db.sql.gz | sudo docker run --rm \
+  zcat $CALL_ROOT/db.sql.gz | sudo docker run --rm -i \
     --link ${CLUSTER_NAME}_mysql:mysql \
     --volume $CALL_ROOT:/host \
     mysql \
@@ -197,7 +197,7 @@ function run {
 
 function migrate {
   run "bundle exec rake db:migrate"
-  run "bundle exec rake kor:index:create kor:index:refresh"
+  run "bundle exec rake kor:index:drop kor:index:create kor:index:refresh"
 }
 
 
@@ -205,7 +205,7 @@ function migrate {
 
 function init {
   run "bundle exec rake db:create db:setup"
-  run "bundle exec rake kor:index:create kor:index:refresh"
+  run "bundle exec rake kor:index:drop kor:index:create kor:index:refresh"
 }
 
 
@@ -227,7 +227,7 @@ function start {
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
     --link ${CLUSTER_NAME}_mongo:mongo \
-    --publish $PORT:8000 \
+    --publish 127.0.0.1:$PORT:8000 \
     docker.coneda.net:443/kor:$VERSION \
     /bin/bash -c "bundle exec puma -e production -p 8000 -t 2 config.ru" kor
 }
@@ -237,10 +237,10 @@ function start {
 
 function stop {
   sudo docker stop ${CLUSTER_NAME}_instance_$NAME
-  sudo docker stop ${CLUSTER_NAME}_instance_bg_$NAME
+  sudo docker stop ${CLUSTER_NAME}_bg_$NAME
 
   sudo docker rm ${CLUSTER_NAME}_instance_$NAME
-  sudo docker rm ${CLUSTER_NAME}_instance_bg_$NAME
+  sudo docker rm ${CLUSTER_NAME}_bg_$NAME
 }
 
 
