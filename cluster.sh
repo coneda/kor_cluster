@@ -66,6 +66,17 @@ function shutdown {
   sudo docker rm ${CLUSTER_NAME}_mysql ${CLUSTER_NAME}_mongo ${CLUSTER_NAME}_elastic
 }
 
+function update_symlinks {
+  local DIR=${1-.}
+  DIR=`expand_path $DIR`
+
+  ln -sfn $CALL_ROOT/cluster.sh $DIR/cluster.sh
+
+  for INSTANCE in $DIR/instances/* ; do
+    ln -sfn $CALL_ROOT/cluster.sh $INSTANCE/instance.sh
+  done
+}
+
 
 # Create a new instance
 
