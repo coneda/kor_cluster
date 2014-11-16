@@ -1,0 +1,4 @@
+[client]
+host=mysql
+user={{DB_USERNAME}}
+password={{DB_PASSWORD}}
