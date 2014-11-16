@@ -141,7 +141,7 @@ function db {
 function snapshot {
   local TS=`date +"%Y%m%d_%H%M%S"`
 
-  local DIR=$CALL_ROOT/../snapshots
+  local DIR=$CALL_ROOT/../../snapshots
   mkdir -p $DIR
   DIR=`expand_path $DIR`
 
