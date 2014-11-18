@@ -18,6 +18,9 @@ function deploy {
   deploy_code
   cleanup
 
+  remote "mkdir -p $SHARED_PATH/tmp"
+  remote "ln -sfn $SHARED_PATH/tmp $CURRENT_PATH/tmp"
+
   finalize
 }
 
