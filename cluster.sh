@@ -158,7 +158,7 @@ function snapshot {
     --link ${CLUSTER_NAME}_mongo:mongo \
     --volume $CALL_ROOT:/host \
     mongo \
-    mongoexport --db $DB_NAME --collection attachments \
+    mongoexport --host mongo --db $DB_NAME --collection attachments \
     | gzip -c > $CALL_ROOT/json.sql.gz
 
   tar czf $DIR/$NAME.$TS.$VERSION.tar.gz -C $CALL_ROOT --exclude=instance.sh --exclude=config.sh --exclude=database.yml --exclude=mysql.cnf .
@@ -193,7 +193,7 @@ function import {
     --link ${CLUSTER_NAME}_mongo:mongo \
     --volume $CALL_ROOT:/host \
     mongo \
-    mongoimport --db $DB_NAME --collection attachments
+    mongoimport --drop --host mongo --db $DB_NAME --collection attachments
 
   rm $CALL_ROOT/db.sql.gz
   rm -rf $CALL_ROOT.old

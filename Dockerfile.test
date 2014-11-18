@@ -10,7 +10,7 @@ ENV RAILS_ENV test
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y build-essential libxml2-dev libxslt-dev git-core curl libssl-dev && \
-    apt-get install -y libmysqlclient-dev imagemagick libav-tools zip && \
+    apt-get install -y libmysqlclient-dev imagemagick libav-tools zip libreadline6-dev && \
     apt-get clean && \
     git clone https://github.com/sstephenson/rbenv.git /opt/rbenv && \
     git clone https://github.com/sstephenson/ruby-build.git /opt/rbenv/plugins/ruby-build && \
