@@ -1,4 +1,4 @@
-FROM docker.coneda.net:443/ubuntu:14.04
+FROM docker.coneda.net:443/ubuntu:latest
 
 MAINTAINER Moritz Schepp <moritz.schepp@gmail.com>
 

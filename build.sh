@@ -7,7 +7,7 @@ CALL_ROOT="$( cd "$( dirname "$0" )" && pwd )"
 TS=`date +"%Y%m%d_%H%M%S"`
 TARGET=$CALL_ROOT/tmp/$COMMIT.$TS
 KOR_REPO=`cat $CALL_ROOT/repository.txt`
-KOR_ROOT=$CALL/tmp
+KOR_ROOT=$CALL_ROOT/tmp/kor
 
 if [ ! -d $KOR_ROOT ]; then
   git clone $KOR_REPO $KOR_ROOT

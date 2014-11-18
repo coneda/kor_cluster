@@ -25,7 +25,7 @@ function create {
 
   CLUSTER_NAME=${2-`pwgen 6 1`}
 
-  ln -sfn $SCRIPT_PATH $DIR/cluster.sh
+  ln -sfn $CALL_PATH/cluster.sh $DIR/cluster.sh
 
   mkdir -p $DIR/mysql
   mkdir -p $DIR/mongo
@@ -66,17 +66,6 @@ function shutdown {
   sudo docker rm ${CLUSTER_NAME}_mysql ${CLUSTER_NAME}_mongo ${CLUSTER_NAME}_elastic
 }
 
-function update_symlinks {
-  local DIR=${1-.}
-  DIR=`expand_path $DIR`
-
-  ln -sfn $CALL_ROOT/cluster.sh $DIR/cluster.sh
-
-  for INSTANCE in $DIR/instances/* ; do
-    ln -sfn $CALL_ROOT/cluster.sh $INSTANCE/instance.sh
-  done
-}
-
 
 # Create a new instance
 
@@ -85,7 +74,7 @@ function new {
   local DIR=$CALL_ROOT/instances/$NAME
   mkdir -p $DIR
 
-  ln -sfn $SCRIPT_PATH $DIR/instance.sh
+  ln -sfn $CALL_PATH/cluster.sh $DIR/instance.sh
   echo "$VERSION" > $DIR/version.txt
 
   mkdir -p $DIR/data
@@ -197,6 +186,22 @@ function import {
 
   rm $CALL_ROOT/db.sql.gz
   rm -rf $CALL_ROOT.old
+
+  start
+}
+
+
+# Upgrade
+
+function upgrade {
+  local TO=$1
+
+  stop
+
+  sed -i -E "s/^VERSION\=.*$/VERSION=$TO/" $CALL_ROOT/config.sh
+
+  VERSION=$TO
+  migrate
 
   start
 }
