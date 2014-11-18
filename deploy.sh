@@ -20,6 +20,7 @@ function deploy {
 
   remote "mkdir -p $SHARED_PATH/tmp"
   remote "ln -sfn $SHARED_PATH/tmp $CURRENT_PATH/tmp"
+  remote "ln -sfn $SHARED_PATH/repository.txt $CURRENT_PATH/repository.txt"
 
   finalize
 }

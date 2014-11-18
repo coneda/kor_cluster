@@ -5,8 +5,17 @@ PURPOSE=${2-production}
 
 CALL_ROOT="$( cd "$( dirname "$0" )" && pwd )"
 TS=`date +"%Y%m%d_%H%M%S"`
-TARGET=$CALL_ROOT/tmp/$TS
-KOR_ROOT=../../kor/src
+TARGET=$CALL_ROOT/tmp/$COMMIT.$TS
+KOR_REPO=`cat $CALL_ROOT/repository.txt`
+KOR_ROOT=$CALL/tmp
+
+if [ ! -d $KOR_ROOT ]; then
+  git clone $KOR_REPO $KOR_ROOT
+else
+  $(cd $KOR_ROOT && git pull --all)
+fi
+
+$(cd $KOR_ROOT && git checkout $COMMIT)
 
 mkdir -p $TARGET
 
