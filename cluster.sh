@@ -3,7 +3,7 @@
 # Local config
 
 SCRIPT_PATH=`readlink -m $0`
-CLUSTER_ROOT="$( cd "$( dirname "$SCRIPT_PATH" )" && pwd )"
+CLUSTER_SCRIPT_ROOT="$( cd "$( dirname "$SCRIPT_PATH" )" && pwd )"
 CALL_ROOT="$( cd "$( dirname "$0" )" && pwd )"
 
 if [ -f $CALL_ROOT/config.sh ]; then
@@ -13,7 +13,7 @@ fi
 
 # Global config and lib
 
-source $CLUSTER_ROOT/lib.sh
+source $CLUSTER_SCRIPT_ROOT/lib.sh
 
 
 # Initialize mysql, elasticsearch and mongodb
@@ -25,18 +25,21 @@ function create {
 
   CLUSTER_NAME=${2-`pwgen 6 1`}
 
-  ln -sfn $CALL_PATH/cluster.sh $DIR/cluster.sh
+  ln -sfn $CALL_ROOT/cluster.sh $DIR/cluster.sh
 
   mkdir -p $DIR/mysql
   mkdir -p $DIR/mongo
   mkdir -p $DIR/elastic
+  mkdir -p $DIR/ssmtp
 
-  tpl $CLUSTER_ROOT/templates/elasticsearch.yml $DIR/elastic/elasticsearch.yml
+  tpl $CLUSTER_SCRIPT_ROOT/templates/ssmtp.conf $DIR/ssmtp/ssmtp.conf
+  tpl $CLUSTER_SCRIPT_ROOT/templates/revaliases $DIR/ssmtp/revaliases
+  tpl $CLUSTER_SCRIPT_ROOT/templates/elasticsearch.yml $DIR/elastic/elasticsearch.yml
 
   DB_USERNAME=root
   DB_PASSWORD=`generate_password`
-  tpl $CLUSTER_ROOT/templates/service_config.sh $DIR/config.sh
-  tpl $CLUSTER_ROOT/templates/mysql.cnf $DIR/mysql.cnf
+  tpl $CLUSTER_SCRIPT_ROOT/templates/service_config.sh $DIR/config.sh
+  tpl $CLUSTER_SCRIPT_ROOT/templates/mysql.cnf $DIR/mysql.cnf
 }
 
 
@@ -74,7 +77,7 @@ function new {
   local DIR=$CALL_ROOT/instances/$NAME
   mkdir -p $DIR
 
-  ln -sfn $CALL_PATH/cluster.sh $DIR/instance.sh
+  ln -sfn $CALL_ROOT/cluster.sh $DIR/instance.sh
   echo "$VERSION" > $DIR/version.txt
 
   mkdir -p $DIR/data
@@ -94,9 +97,9 @@ function new {
   DB_USERNAME=$KOR_DB_USERNAME
   DB_PASSWORD=$KOR_DB_PASSWORD
   DB_NAME=$KOR_DB_NAME
-  tpl $CLUSTER_ROOT/templates/database.yml $DIR/database.yml
-  tpl $CLUSTER_ROOT/templates/mysql.cnf $DIR/mysql.cnf
-  tpl $CLUSTER_ROOT/templates/config.sh $DIR/config.sh
+  tpl $CLUSTER_SCRIPT_ROOT/templates/database.yml $DIR/database.yml
+  tpl $CLUSTER_SCRIPT_ROOT/templates/mysql.cnf $DIR/mysql.cnf
+  tpl $CLUSTER_SCRIPT_ROOT/templates/config.sh $DIR/config.sh
 
   $DIR/instance.sh init
 }
@@ -214,6 +217,7 @@ function run {
 
   sudo docker run --rm -ti \
     --volume $CALL_ROOT:/opt/kor/shared \
+    --volume $CLUSTER_ROOT/ssmtp:/etc/ssmtp \
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
     --link ${CLUSTER_NAME}_mongo:mongo \
@@ -244,6 +248,7 @@ function start {
   sudo docker run -d \
     --name ${CLUSTER_NAME}_bg_$NAME \
     --volume $CALL_ROOT:/opt/kor/shared \
+    --volume $CLUSTER_ROOT/ssmtp:/etc/ssmtp \
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
     --link ${CLUSTER_NAME}_mongo:mongo \
@@ -253,6 +258,7 @@ function start {
   sudo docker run -d \
     --name ${CLUSTER_NAME}_instance_$NAME \
     --volume $CALL_ROOT:/opt/kor/shared \
+    --volume $CLUSTER_ROOT/ssmtp:/etc/ssmtp \
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
     --link ${CLUSTER_NAME}_mongo:mongo \

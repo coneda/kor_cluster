@@ -3,6 +3,7 @@ FROM docker.coneda.net:443/ubuntu:latest
 MAINTAINER Moritz Schepp <moritz.schepp@gmail.com>
 
 VOLUME /opt/kor/shared
+VOLUME /etc/ssmtp
 EXPOSE 8000
 
 ENV RAILS_ENV production
@@ -10,7 +11,7 @@ ENV RAILS_ENV production
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y build-essential libxml2-dev libxslt-dev git-core curl libssl-dev && \
-    apt-get install -y libmysqlclient-dev imagemagick libav-tools zip libreadline6-dev && \
+    apt-get install -y libmysqlclient-dev imagemagick libav-tools zip libreadline6-dev ssmtp && \
     apt-get clean && \
     git clone https://github.com/sstephenson/rbenv.git /opt/rbenv && \
     git clone https://github.com/sstephenson/ruby-build.git /opt/rbenv/plugins/ruby-build && \

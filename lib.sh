@@ -16,6 +16,7 @@ function tpl {
 
   sed -i "s/{{NAME}}/$NAME/g" $DESTINATION
   sed -i "s/{{CLUSTER_NAME}}/$CLUSTER_NAME/g" $DESTINATION
+  sed -i "s#{{CLUSTER_ROOT}}#$CLUSTER_ROOT#g" $DESTINATION
   sed -i "s/{{VERSION}}/$VERSION/g" $DESTINATION
   sed -i "s/{{PORT}}/$PORT/g" $DESTINATION
   sed -i "s#{{DIR}}#$DIR#g" $DESTINATION
