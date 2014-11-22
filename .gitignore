@@ -1,4 +1,5 @@
 repository.txt
 deploy.config.sh
 tmp/*
+.vagrant
 
