@@ -9,13 +9,13 @@ TARGET=$CALL_ROOT/tmp/$COMMIT.$TS
 KOR_REPO=`cat $CALL_ROOT/repository.txt`
 KOR_ROOT=$CALL_ROOT/tmp/kor
 
-if [ ! -d $KOR_ROOT ]; then
-  git clone $KOR_REPO $KOR_ROOT
-else
-  $(cd $KOR_ROOT && git pull --all)
-fi
+rm -rf $KOR_ROOT
+git clone $KOR_REPO $KOR_ROOT
 
-$(cd $KOR_ROOT && git checkout $COMMIT)
+(
+  cd $KOR_ROOT
+  git checkout $COMMIT
+)
 
 mkdir -p $TARGET
 

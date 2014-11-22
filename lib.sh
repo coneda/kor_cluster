@@ -48,3 +48,6 @@ function config {
   echo "DB_PASSWORD=$DB_PASSWORD"
 }
 
+function docker_host_ip {
+  ip route | awk '/docker0/ { print $9 }'
+}

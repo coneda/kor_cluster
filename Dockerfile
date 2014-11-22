@@ -43,6 +43,10 @@ ADD . /opt/kor
 RUN tar xf /opt/kor/kor.tar && \
     bash -c "bundle install --path /opt/kor/bundle --without development test" kor && \
     ln -sfn /opt/kor/shared/database.yml /opt/kor/current/config/database.yml && \
+    ln -sfn /opt/kor/shared/kor.yml /opt/kor/current/config/kor.yml && \
+    ln -sfn /opt/kor/shared/kor.app.yml /opt/kor/current/config/kor.app.yml && \
+    ln -sfn /opt/kor/shared/legal.txt /opt/kor/current/config/legal.txt && \
+    ln -sfn /opt/kor/shared/contact.txt /opt/kor/current/config/contact.txt && \
     ln -sfn /opt/kor/shared/data /opt/kor/current/data && \
     ln -sfn /opt/kor/shared/log /opt/kor/current/log
 

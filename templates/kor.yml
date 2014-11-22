@@ -1,0 +1,3 @@
+production:
+  mail_delivery_method: sendmail
+  

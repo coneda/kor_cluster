@@ -46,6 +46,15 @@ function create {
 # Start mysql, elasticsearch and mongodb
 
 function boot {
+  SSMTP_TPL_CHECKSUM=`sha1sum $CLUSTER_SCRIPT_ROOT/templates/ssmtp.conf | cut -d" " -f 1`
+  SSMTP_CHECKSUM=`sha1sum $CALL_ROOT/ssmtp/ssmtp.conf | cut -d" " -f 1`
+
+  if [ "$SSMTP_TPL_CHECKSUM" = "$SSMTP_CHECKSUM" ]; then
+    echo "Your SSMTP config file wasn't changed!"
+    echo "Please adapt it to a working configuration before using this cluster"
+    exit 1
+  fi
+
   sudo docker run -d \
     --name ${CLUSTER_NAME}_mysql \
     --volume $CALL_ROOT/mysql:/var/lib/mysql \
@@ -83,10 +92,6 @@ function new {
   mkdir -p $DIR/data
   mkdir -p $DIR/log
 
-  touch $DIR/contact.txt
-  touch $DIR/help.yml
-  touch $DIR/legal.txt
-  touch $DIR/kor.yml
   touch $DIR/kor.app.yml
 
   KOR_DB_NAME="kor_$NAME"
@@ -100,6 +105,10 @@ function new {
   tpl $CLUSTER_SCRIPT_ROOT/templates/database.yml $DIR/database.yml
   tpl $CLUSTER_SCRIPT_ROOT/templates/mysql.cnf $DIR/mysql.cnf
   tpl $CLUSTER_SCRIPT_ROOT/templates/config.sh $DIR/config.sh
+  tpl $CLUSTER_SCRIPT_ROOT/templates/kor.yml $DIR/kor.yml
+  tpl $CLUSTER_SCRIPT_ROOT/templates/contact.txt.example $DIR/contact.txt
+  tpl $CLUSTER_SCRIPT_ROOT/templates/help.yml.example $DIR/help.yml
+  tpl $CLUSTER_SCRIPT_ROOT/templates/legal.txt.example $DIR/legal.txt
 
   $DIR/instance.sh init
 }
@@ -221,6 +230,7 @@ function run {
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
     --link ${CLUSTER_NAME}_mongo:mongo \
+    --add-host dockerhost:`docker_host_ip` \
     docker.coneda.net:443/kor:$VERSION \
     /bin/bash -c "$COMMAND" kor
 }
@@ -252,6 +262,7 @@ function start {
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
     --link ${CLUSTER_NAME}_mongo:mongo \
+    --add-host dockerhost:`docker_host_ip` \
     docker.coneda.net:443/kor:$VERSION \
     /bin/bash -c "bundle exec rake jobs:work" kor
 
@@ -262,6 +273,7 @@ function start {
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
     --link ${CLUSTER_NAME}_mongo:mongo \
+    --add-host dockerhost:`docker_host_ip` \
     --publish 127.0.0.1:$PORT:8000 \
     docker.coneda.net:443/kor:$VERSION \
     /bin/bash -c "bundle exec puma -e production -p 8000 -t 2 config.ru" kor
