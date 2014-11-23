@@ -10,12 +10,12 @@ KOR_REPO=`cat $CALL_ROOT/repository.txt`
 KOR_ROOT=$CALL_ROOT/tmp/kor
 
 rm -rf $KOR_ROOT
-git clone $KOR_REPO $KOR_ROOT
+git clone $KOR_REPO -b $COMMIT $KOR_ROOT
 
-(
-  cd $KOR_ROOT
-  git checkout -b $COMMIT remotes/origin/$COMMIT
-)
+# (
+#   cd $KOR_ROOT
+#   git checkout -b $COMMIT remotes/origin/$COMMIT
+# )
 
 mkdir -p $TARGET
 
