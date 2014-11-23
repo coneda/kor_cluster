@@ -21,7 +21,6 @@ RUN apt-get update && \
     echo '. /etc/profile.d/rbenv.sh' >> /etc/bash.bashrc \
     echo 'gem: --no-ri --no-rdoc' >> /etc/gemrc && \
     useradd -m kor
-    
 
 ENV RBENV_ROOT /opt/rbenv
 ENV PATH /opt/rbenv/bin:/opt/rbenv/shims:$PATH
@@ -38,7 +37,7 @@ RUN rbenv install `cat /opt/kor/ruby-version` && \
     rbenv shims && \
     gem install bundler
 
-ADD . /opt/kor
+ADD kor.tar /opt/kor/kor.tar
 
 RUN tar xf /opt/kor/kor.tar && \
     bash -c "bundle install --path /opt/kor/bundle --without development test" kor && \

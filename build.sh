@@ -9,17 +9,21 @@ TARGET=$CALL_ROOT/tmp/$COMMIT.$TS
 KOR_REPO=`cat $CALL_ROOT/repository.txt`
 KOR_ROOT=$CALL_ROOT/tmp/kor
 
-rm -rf $KOR_ROOT
-git clone $KOR_REPO -b $COMMIT $KOR_ROOT
-
-# (
-#   cd $KOR_ROOT
-#   git checkout -b $COMMIT remotes/origin/$COMMIT
-# )
+if [ -d $KOR_ROOT ]; then
+  (
+    cd $KOR_ROOT
+    git fetch --all
+    git checkout origin/$COMMIT
+  )
+else
+  git clone $KOR_REPO -b $COMMIT $KOR_ROOT
+fi
 
 mkdir -p $TARGET
 
-if cd $KOR_ROOT && git show $COMMIT:.ruby-version 2> /dev/null > $TARGET/ruby-version ; then
+if cd $KOR_ROOT && [ -f $KOR_ROOT/.ruby-version ] ; then
+  cp --preserve=all $KOR_ROOT/.ruby-version $TARGET/ruby-version
+
   if [ $PURPOSE = "production" ]; then
     cp $CALL_ROOT/Dockerfile $TARGET/Dockerfile
     cd $KOR_ROOT && git archive -o $TARGET/kor.tar $COMMIT
