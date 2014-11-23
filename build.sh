@@ -13,7 +13,8 @@ if [ -d $KOR_ROOT ]; then
   (
     cd $KOR_ROOT
     git fetch --all
-    git checkout origin/$COMMIT
+    CHECKOUT=`git ls-remote 2> /dev/null | grep "v1.8$" | head -n 1 | cut -f 2`
+    git checkout -f $CHECKOUT
   )
 else
   git clone $KOR_REPO -b $COMMIT $KOR_ROOT
