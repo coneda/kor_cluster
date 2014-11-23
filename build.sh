@@ -14,6 +14,7 @@ git clone $KOR_REPO $KOR_ROOT
 
 (
   cd $KOR_ROOT
+  git pull --all
   git checkout $COMMIT
 )
 
