@@ -14,7 +14,7 @@ git clone $KOR_REPO $KOR_ROOT
 
 (
   cd $KOR_ROOT
-  git checkout -t origin/$COMMIT
+  git checkout -b $COMMIT origin/$COMMIT
 )
 
 mkdir -p $TARGET
