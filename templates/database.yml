@@ -16,3 +16,22 @@ production:
     host: elastic
     port: 9200
     index: {{KOR_DB_NAME}}
+
+test:
+  adapter: mysql2
+  host: mysql
+  database: {{KOR_DB_NAME}}
+  username: {{KOR_DB_USERNAME}}
+  password: {{KOR_DB_PASSWORD}}
+  encoding: utf8
+  collation: utf8_general_ci
+
+  mongo:
+    host: mongo
+    database: {{KOR_DB_NAME}}
+    port: 27017
+
+  elastic:
+    host: elastic
+    port: 9200
+    index: {{KOR_DB_NAME}}
