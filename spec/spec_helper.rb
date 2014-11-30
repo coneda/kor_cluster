@@ -19,8 +19,14 @@ module Helpers
     system "vagrant up"
   end
 
+  def vagrant_read_file(filename)
+    `vagrant ssh -c "cat #{filename}"`
+  end
+
   def vagrant(command, options = {})
-    system "rm #{ROOT}/tmp/output.txt"
+    if File.exists?("#{ROOT}/tmp/output.txt")
+      system "rm #{ROOT}/tmp/output.txt"
+    end
 
     options = {
       :verbose => false
