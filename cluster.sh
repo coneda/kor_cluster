@@ -235,6 +235,20 @@ function run {
     /bin/bash -c "$COMMAND" kor
 }
 
+function job {
+  local COMMAND="$1"
+
+  sudo docker run --rm \
+    --volume $CALL_ROOT:/opt/kor/shared \
+    --volume $CLUSTER_ROOT/ssmtp:/etc/ssmtp \
+    --link ${CLUSTER_NAME}_mysql:mysql \
+    --link ${CLUSTER_NAME}_elastic:elastic \
+    --link ${CLUSTER_NAME}_mongo:mongo \
+    --add-host dockerhost:`docker_host_ip` \
+    docker.coneda.net:443/kor:$VERSION \
+    /bin/bash -c "$COMMAND" kor
+}
+
 
 # Migrate the instance
 
