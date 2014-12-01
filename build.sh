@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 COMMIT=${1-master}
 PURPOSE=${2-production}
@@ -14,6 +14,7 @@ if [ -d $KOR_ROOT ]; then
     cd $KOR_ROOT
     git fetch --all
     git checkout $COMMIT || echo "Pulling not possible, not on a branch"
+    git pull || true
   )
 else
   git clone $KOR_REPO -b $COMMIT $KOR_ROOT
