@@ -64,7 +64,8 @@ function boot {
   sudo docker run -d \
     --name ${CLUSTER_NAME}_mongo \
     --volume $CALL_ROOT/mongo:/data/db \
-    mongo
+    mongo \
+    /usr/local/bin/mongod --smallfiles
 
   sudo docker run -d \
     --name ${CLUSTER_NAME}_elastic \
