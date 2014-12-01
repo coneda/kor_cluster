@@ -13,7 +13,7 @@ if [ -d $KOR_ROOT ]; then
   (
     cd $KOR_ROOT
     git fetch --all
-    git pull $COMMIT || echo "Pulling not possible, not on a branch"
+    git checkout $COMMIT || echo "Pulling not possible, not on a branch"
   )
 else
   git clone $KOR_REPO -b $COMMIT $KOR_ROOT
