@@ -28,8 +28,6 @@ ENV PATH /opt/rbenv/bin:/opt/rbenv/shims:$PATH
 RUN mkdir -p /opt/kor/current && \
     mkdir -p /opt/kor/shared/data
 
-WORKDIR /opt/kor/current
-
 ADD ruby-version /opt/kor/ruby-version
 
 RUN rbenv install `cat /opt/kor/ruby-version` && \
@@ -37,10 +35,10 @@ RUN rbenv install `cat /opt/kor/ruby-version` && \
     rbenv shims && \
     gem install bundler
 
-ADD kor.tar /opt/kor/kor.tar
+ADD kor.tar /opt/kor/current
+WORKDIR /opt/kor/current
 
-RUN tar xf /opt/kor/kor.tar && \
-    bash -c "bundle install --path /opt/kor/bundle --without development test" kor && \
+RUN bash -c "bundle install --path /opt/kor/bundle --without development test" kor && \
     ln -sfn /opt/kor/shared/database.yml /opt/kor/current/config/database.yml && \
     ln -sfn /opt/kor/shared/kor.yml /opt/kor/current/config/kor.yml && \
     ln -sfn /opt/kor/shared/kor.app.yml /opt/kor/current/config/kor.app.yml && \
