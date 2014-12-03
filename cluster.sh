@@ -34,7 +34,11 @@ function create {
 
   tpl $CLUSTER_SCRIPT_ROOT/templates/ssmtp.conf $DIR/ssmtp/ssmtp.conf
   tpl $CLUSTER_SCRIPT_ROOT/templates/revaliases $DIR/ssmtp/revaliases
-  tpl $CLUSTER_SCRIPT_ROOT/templates/elasticsearch.yml $DIR/elastic/elasticsearch.yml
+  # tpl $CLUSTER_SCRIPT_ROOT/templates/elasticsearch.yml $DIR/elastic/elasticsearch.yml
+  mkdir -p $DIR/elastic/log
+  mkdir -p $DIR/elastic/data
+  mkdir -p $DIR/elastic/work
+  mkdir -p $DIR/elastic/plugins
 
   DB_USERNAME=root
   DB_PASSWORD=`generate_password`
@@ -70,8 +74,8 @@ function boot {
   sudo docker run -d \
     --name ${CLUSTER_NAME}_elastic \
     --volume $CALL_ROOT/elastic:/data \
-    dockerfile/elasticsearch \
-    /elasticsearch/bin/elasticsearch -Des.config=/data/elasticsearch.yml
+    dockerfile/elasticsearch
+    # /elasticsearch/bin/elasticsearch -Des.config=/data/elasticsearch.yml
 }
 
 function shutdown {
