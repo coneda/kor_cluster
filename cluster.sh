@@ -34,7 +34,7 @@ function create {
 
   tpl $CLUSTER_SCRIPT_ROOT/templates/ssmtp.conf $DIR/ssmtp/ssmtp.conf
   tpl $CLUSTER_SCRIPT_ROOT/templates/revaliases $DIR/ssmtp/revaliases
-  # tpl $CLUSTER_SCRIPT_ROOT/templates/elasticsearch.yml $DIR/elastic/elasticsearch.yml
+  
   mkdir -p $DIR/elastic/log
   mkdir -p $DIR/elastic/data
   mkdir -p $DIR/elastic/work
@@ -75,7 +75,6 @@ function boot {
     --name ${CLUSTER_NAME}_elastic \
     --volume $CALL_ROOT/elastic:/data \
     dockerfile/elasticsearch
-    # /elasticsearch/bin/elasticsearch -Des.config=/data/elasticsearch.yml
 }
 
 function shutdown {
@@ -164,7 +163,7 @@ function snapshot {
     --link ${CLUSTER_NAME}_mongo:mongo \
     --volume $CALL_ROOT:/host \
     mongo \
-    mongoexport --host mongo --db $DB_NAME --collection attachments \
+    mongoexport --host mongo --db $DB_NAME --collection attachments --jsonArray \
     | gzip -c > $CALL_ROOT/json.sql.gz
 
   tar czf $DIR/$NAME.$TS.$VERSION.tar.gz -C $CALL_ROOT --exclude=instance.sh --exclude=config.sh --exclude=database.yml --exclude=mysql.cnf .
@@ -199,7 +198,7 @@ function import {
     --link ${CLUSTER_NAME}_mongo:mongo \
     --volume $CALL_ROOT:/host \
     mongo \
-    mongoimport --drop --host mongo --db $DB_NAME --collection attachments
+    mongoimport --drop --host mongo --db $DB_NAME --collection attachments --jsonArray
 
   rm $CALL_ROOT/db.sql.gz
   rm -rf $CALL_ROOT.old
@@ -240,6 +239,21 @@ function run {
     /bin/bash -c "$COMMAND" kor
 }
 
+function run_headless {
+  local COMMAND="$1"
+
+  sudo docker run --rm \
+    --attach STDOUT --attach STDERR \
+    --volume $CALL_ROOT:/opt/kor/shared \
+    --volume $CLUSTER_ROOT/ssmtp:/etc/ssmtp \
+    --link ${CLUSTER_NAME}_mysql:mysql \
+    --link ${CLUSTER_NAME}_elastic:elastic \
+    --link ${CLUSTER_NAME}_mongo:mongo \
+    --add-host dockerhost:`docker_host_ip` \
+    docker.coneda.net:443/kor:$VERSION \
+    /bin/bash -c "$COMMAND" kor
+}
+
 function job {
   local COMMAND="$1"
 
@@ -266,8 +280,8 @@ function migrate {
 # Init the instance
 
 function init {
-  run "bundle exec rake db:create db:setup"
-  run "bundle exec rake kor:index:drop kor:index:create kor:index:refresh"
+  run_headless "bundle exec rake db:create db:setup"
+  run_headless "bundle exec rake kor:index:drop kor:index:create kor:index:refresh"
 }
 
 
