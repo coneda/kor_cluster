@@ -150,7 +150,7 @@ function snapshot {
   mkdir -p $DIR
   DIR=`expand_path $DIR`
 
-  stop
+  stop || true
 
   sudo docker run --rm \
     --link ${CLUSTER_NAME}_mysql:mysql \
@@ -178,7 +178,7 @@ function snapshot {
 function import {
   local FILE=$1
 
-  stop
+  stop || true
 
   mv $CALL_ROOT $CALL_ROOT.old
   mkdir -p $CALL_ROOT
@@ -212,7 +212,7 @@ function import {
 function upgrade {
   local TO=$1
 
-  stop
+  stop || true
 
   sed -i -E "s/^VERSION\=.*$/VERSION=$TO/" $CALL_ROOT/config.sh
 
