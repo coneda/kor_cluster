@@ -272,8 +272,8 @@ function job {
 # Migrate the instance
 
 function migrate {
-  run "bundle exec rake db:migrate"
-  run "bundle exec rake kor:index:drop kor:index:create kor:index:refresh"
+  run_headless "bundle exec rake db:migrate"
+  run_headless "bundle exec rake kor:index:drop kor:index:create kor:index:refresh"
 }
 
 
