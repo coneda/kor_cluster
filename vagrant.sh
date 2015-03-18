@@ -6,7 +6,7 @@ function setup_docker {
 
   apt-get update
   apt-get upgrade -y
-  apt-get install lxc-docker pwgen
+  apt-get install -y lxc-docker pwgen
 }
 
 function clean_docker {
@@ -15,9 +15,9 @@ function clean_docker {
     docker rm $CONTAINER
   done
 
-  # for IMAGE in `docker images -q` ; do
-  #   docker rmi $IMAGE
-  # done
+  for IMAGE in `docker images -q` ; do
+    docker rmi $IMAGE
+  done
 }
 
 $1

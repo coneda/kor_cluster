@@ -69,7 +69,7 @@ function boot {
     --name ${CLUSTER_NAME}_mongo \
     --volume $CALL_ROOT/mongo:/data/db \
     mongo \
-    /usr/local/bin/mongod --smallfiles
+    mongod --smallfiles
 
   sudo docker run -d \
     --name ${CLUSTER_NAME}_elastic \
@@ -307,7 +307,7 @@ function start {
     --link ${CLUSTER_NAME}_elastic:elastic \
     --link ${CLUSTER_NAME}_mongo:mongo \
     --add-host dockerhost:`docker_host_ip` \
-    --publish 127.0.0.1:$PORT:8000 \
+    --publish $PORT:8000 \
     docker.coneda.net:443/kor:$VERSION \
     /bin/bash -c "bundle exec puma -e production -p 8000 -t 2 config.ru" kor
 }
