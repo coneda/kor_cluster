@@ -194,11 +194,13 @@ function import {
     mysql \
     mysql --defaults-extra-file=/host/mysql.cnf $DB_NAME
 
-  zcat $CALL_ROOT/mongo.json.gz | sudo docker run --rm -i \
-    --link ${CLUSTER_NAME}_mongo:mongo \
-    --volume $CALL_ROOT:/host \
-    mongo \
-    mongoimport --drop --host mongo --db $DB_NAME --collection attachments --jsonArray
+  if [ -f $CALL_ROOT/mongo.json.gz ]; then
+    zcat $CALL_ROOT/mongo.json.gz | sudo docker run --rm -i \
+      --link ${CLUSTER_NAME}_mongo:mongo \
+      --volume $CALL_ROOT:/host \
+      mongo \
+      mongoimport --drop --host mongo --db $DB_NAME --collection attachments --jsonArray
+  fi
 
   rm $CALL_ROOT/db.sql.gz
   rm -rf $CALL_ROOT.old
