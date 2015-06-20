@@ -60,6 +60,10 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
+  config.before :all do
+    vagrant_up
+  end
+
   config.before :each do
     vagrant "sudo /vagrant/vagrant.sh clean_docker"
     vagrant "sudo rm -rf #{CLUSTER_ROOT}"
