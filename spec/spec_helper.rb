@@ -65,6 +65,7 @@ RSpec.configure do |config|
   end
 
   config.before :all do
+    vagrant_destroy
     vagrant_up
   end
 
@@ -76,10 +77,6 @@ RSpec.configure do |config|
 
   config.after :each do
     system "rm #{ROOT}/tmp/output.txt"
-  end
-
-  config.after :all do
-    vagrant_destroy
   end
 
 end
