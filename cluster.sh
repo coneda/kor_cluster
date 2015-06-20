@@ -74,7 +74,7 @@ function boot {
   sudo docker run -d \
     --name ${CLUSTER_NAME}_elastic \
     --volume $CALL_ROOT/elastic:/data \
-    dockerfile/elasticsearch
+    elasticsearch:1.5.2
 }
 
 function shutdown {
