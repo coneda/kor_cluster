@@ -12,7 +12,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     kor.vm.provision :shell, path: "vagrant.sh", args: "setup_docker"
 
-    kor.vm.network :forwarded_port, host: 8080, guest: 8001
+    kor.vm.network :forwarded_port, host: 8001, guest: 8001
 
     kor.vm.provider "virtualbox" do |vbox|
       vbox.name = "kor_cluster"

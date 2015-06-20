@@ -19,6 +19,10 @@ module Helpers
     system "vagrant up"
   end
 
+  def vagrant_destroy
+    system "vagrant destroy -f"
+  end
+
   def vagrant_read_file(filename)
     `vagrant ssh -c "cat #{filename}"`
   end
@@ -72,6 +76,10 @@ RSpec.configure do |config|
 
   config.after :each do
     system "rm #{ROOT}/tmp/output.txt"
+  end
+
+  config.after :all do
+    vagrant_destroy
   end
 
 end
