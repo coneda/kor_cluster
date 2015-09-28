@@ -159,12 +159,13 @@ function snapshot {
     mysqldump --defaults-extra-file=/host/mysql.cnf $DB_NAME \
     | gzip -c > $CALL_ROOT/db.sql.gz
 
-  sudo docker run --rm \
-    --link ${CLUSTER_NAME}_mongo:mongo \
-    --volume $CALL_ROOT:/host \
-    mongo \
-    mongoexport --host mongo --db $DB_NAME --collection attachments --jsonArray \
-    | gzip -c > $CALL_ROOT/json.sql.gz
+  # This is only necessary for kor-1.8 and below, re-enable if necessary
+  # sudo docker run --rm \
+  #   --link ${CLUSTER_NAME}_mongo:mongo \
+  #   --volume $CALL_ROOT:/host \
+  #   mongo \
+  #   mongoexport --host mongo --db $DB_NAME --collection attachments --jsonArray \
+  #   | gzip -c > $CALL_ROOT/mongo.json.gz
 
   tar czf $DIR/$NAME.$TS.$VERSION.tar.gz -C $CALL_ROOT --exclude=instance.sh --exclude=config.sh --exclude=database.yml --exclude=mysql.cnf .
   rm $CALL_ROOT/db.sql.gz
@@ -194,13 +195,14 @@ function import {
     mysql \
     mysql --defaults-extra-file=/host/mysql.cnf $DB_NAME
 
-  if [ -f $CALL_ROOT/mongo.json.gz ]; then
-    zcat $CALL_ROOT/mongo.json.gz | sudo docker run --rm -i \
-      --link ${CLUSTER_NAME}_mongo:mongo \
-      --volume $CALL_ROOT:/host \
-      mongo \
-      mongoimport --drop --host mongo --db $DB_NAME --collection attachments --jsonArray
-  fi
+  # This is only necessary for kor-1.8 and below, re-enable if necessary
+  # if [ -f $CALL_ROOT/mongo.json.gz ]; then
+  #   zcat $CALL_ROOT/mongo.json.gz | sudo docker run --rm -i \
+  #     --link ${CLUSTER_NAME}_mongo:mongo \
+  #     --volume $CALL_ROOT:/host \
+  #     mongo \
+  #     mongoimport --drop --host mongo --db $DB_NAME --collection attachments --jsonArray
+  # fi
 
   rm $CALL_ROOT/db.sql.gz
   rm -rf $CALL_ROOT.old
