@@ -10,6 +10,10 @@ within a cluster share a mysql and an elastic instance. Each instance will be
 available on a distinct port and brings a web process as well as a background
 process to perform various tasks (mostly image processing).
 
+To combine the services and potentially use a joint SSL certificate, a nginx
+server is also part of a cluster. Its configuration is based on existing
+instances and their setup.
+
 ## Usage
 
 The script features several commands which all operate either on the cluster or
@@ -26,16 +30,28 @@ first, clone the repository:
 
 Then create a cluster:
 
-    ./cluster.sh create /var/my_kor_cluster
+    CLUSTER_PORT=443 ./cluster.sh create /var/my_kor_cluster
 
 That will bootstrap a cluster and it will also symlink the cluster.sh script to
 the cluster root at /var/my_kor_cluster/cluster.sh
 
-A cluster can be up and down. If it is up, mysql and elasticsearch are started.
-In down state, fire the following command to bring it up:
+The CLUSTER_PORT is the port on which nginx is going to listen and where all 
+instances are going to be reachable. Also, a cluster can be up and down. If it
+is up, mysql and elasticsearch are started. In down state, fire the following
+command to bring it up:
 
     /var/my_kor_cluster/cluster.sh boot
     # to bring it back down again, use 'shutdown'
+
+The proxy has to be started and stopped separately since it depends on the 
+instances: When it is started, it parses the instance setup and includes vhosts
+for every instance:
+
+    /var/my_kor_cluster/cluster.sh start_proxy
+
+and to stop it again:
+
+    /var/my_kor_cluster/cluster.sh stop_proxy
 
 ### Instances
 
@@ -46,6 +62,7 @@ the port it is going to run on. This is done with environment variables:
 
     VERSION=v1.9
     PORT=8001
+    SERVER_NAME=my_instance.example.com
     /var/my_kor_cluster/cluster.sh new my_instance
 
 The instance will be created in /var/my_kor_cluster/instances/my_instance and
@@ -58,8 +75,7 @@ configuration and data for that instance. It can be started like this:
 
 #### Upgrades
 
-Upgrading the cluster script can simply be done by pulling the above git
-repository.
+Upgrading the cluster script can simply be done by pulling this git repository.
 
 Since the setup is based on Docker, instance upgrades are as simple as possible.
 Basically the old container is stopped and the new one is fired up. In between,

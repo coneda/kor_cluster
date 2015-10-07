@@ -17,6 +17,8 @@ function tpl {
   sed -i "s/{{NAME}}/$NAME/g" $DESTINATION
   sed -i "s/{{CLUSTER_NAME}}/$CLUSTER_NAME/g" $DESTINATION
   sed -i "s#{{CLUSTER_ROOT}}#$CLUSTER_ROOT#g" $DESTINATION
+  sed -i "s#{{CLUSTER_PORT}}#$CLUSTER_PORT#g" $DESTINATION
+  sed -i "s#{{SERVER_NAME}}#$SERVER_NAME#g" $DESTINATION
   sed -i "s/{{VERSION}}/$VERSION/g" $DESTINATION
   sed -i "s/{{PORT}}/$PORT/g" $DESTINATION
   sed -i "s#{{DIR}}#$DIR#g" $DESTINATION
@@ -29,6 +31,7 @@ function tpl {
   sed -i "s#{{KOR_DB_USERNAME}}#$KOR_DB_USERNAME#g" $DESTINATION
   sed -i "s#{{KOR_DB_PASSWORD}}#$KOR_DB_PASSWORD#g" $DESTINATION
   sed -i "s#{{KOR_DB_NAME}}#$KOR_DB_NAME#g" $DESTINATION
+  sed -i "s#{{INSTANCE_NAME}}#$INSTANCE_NAME#g" $DESTINATION
 }
 
 function expand_path {

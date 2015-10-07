@@ -31,6 +31,7 @@ function create {
   mkdir -p $DIR/mongo
   mkdir -p $DIR/elastic
   mkdir -p $DIR/ssmtp
+  mkdir -p $DIR/nginx
 
   tpl $CLUSTER_SCRIPT_ROOT/templates/ssmtp.conf $DIR/ssmtp/ssmtp.conf
   tpl $CLUSTER_SCRIPT_ROOT/templates/revaliases $DIR/ssmtp/revaliases
@@ -48,6 +49,38 @@ function create {
 
 
 # Start mysql, elasticsearch and mongodb
+
+function generate_vhost {
+  INSTANCE_NAME=$1
+  TARGET=$CLUSTER_ROOT/nginx/vhosts/$INSTANCE_NAME.conf
+  source $CLUSTER_ROOT/instances/$INSTANCE_NAME/config.sh
+  tpl $CLUSTER_SCRIPT_ROOT/templates/vhost.conf $TARGET
+}
+
+function start_proxy {
+  tpl $CLUSTER_SCRIPT_ROOT/templates/nginx.conf $CLUSTER_ROOT/nginx/nginx.conf
+  mkdir -p $CLUSTER_ROOT/nginx/vhosts
+  rm -f $CLUSTER_ROOT/nginx/vhosts/*.conf
+
+  LINK_PARAM=""
+  for INSTANCE_NAME in $CLUSTER_ROOT/instances/* ; do
+    INSTANCE_NAME=$(basename $INSTANCE_NAME)
+    generate_vhost $INSTANCE_NAME
+    LINK_PARAM="$LINK_PARAM --link ${CLUSTER_NAME}_instance_${INSTANCE_NAME}:${INSTANCE_NAME}"
+  done
+
+  sudo docker run -d \
+    --name ${CLUSTER_NAME}_nginx \
+    -v $CLUSTER_ROOT/nginx:/etc/nginx \
+    -p $CLUSTER_PORT:$CLUSTER_PORT \
+    $LINK_PARAM \
+    nginx
+}
+
+function stop_proxy {
+  sudo docker stop ${CLUSTER_NAME}_nginx
+  sudo docker rm ${CLUSTER_NAME}_nginx
+}
 
 function boot {
   SSMTP_TPL_CHECKSUM=`sha1sum $CLUSTER_SCRIPT_ROOT/templates/ssmtp.conf | cut -d" " -f 1`
