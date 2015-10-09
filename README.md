@@ -35,6 +35,12 @@ Then create a cluster:
 That will bootstrap a cluster and it will also symlink the cluster.sh script to
 the cluster root at /var/my_kor_cluster/cluster.sh
 
+There is some basic configuration that has to be changed according to your
+setup:
+
+* make sure to change ssmtp.conf to a working email configuration
+* change nginx.conf according to your needs
+
 The CLUSTER_PORT is the port on which nginx is going to listen and where all 
 instances are going to be reachable. Also, a cluster can be up and down. If it
 is up, mysql and elasticsearch are started. In down state, fire the following

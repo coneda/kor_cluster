@@ -5,6 +5,10 @@
 SCRIPT_PATH=`readlink -m $0`
 CLUSTER_SCRIPT_ROOT="$( cd "$( dirname "$SCRIPT_PATH" )" && pwd )"
 CALL_ROOT="$( cd "$( dirname "$0" )" && pwd )"
+CLUSTER_ROOT=`cd "$CALL_ROOT"; pwd`
+if [ -d $CALL_ROOT/instances ]; then
+  CLUSTER_ROOT=`cd "$CALL_ROOT/../.."; pwd`
+fi
 
 if [ -f $CALL_ROOT/config.sh ]; then
   source $CALL_ROOT/config.sh
@@ -35,6 +39,8 @@ function create {
 
   tpl $CLUSTER_SCRIPT_ROOT/templates/ssmtp.conf $DIR/ssmtp/ssmtp.conf
   tpl $CLUSTER_SCRIPT_ROOT/templates/revaliases $DIR/ssmtp/revaliases
+
+  tpl $CLUSTER_SCRIPT_ROOT/templates/nginx.conf $CLUSTER_ROOT/nginx/nginx.conf
   
   mkdir -p $DIR/elastic/log
   mkdir -p $DIR/elastic/data
@@ -58,7 +64,6 @@ function generate_vhost {
 }
 
 function start_proxy {
-  tpl $CLUSTER_SCRIPT_ROOT/templates/nginx.conf $CLUSTER_ROOT/nginx/nginx.conf
   mkdir -p $CLUSTER_ROOT/nginx/vhosts
   rm -f $CLUSTER_ROOT/nginx/vhosts/*.conf
 
