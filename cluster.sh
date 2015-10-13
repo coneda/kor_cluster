@@ -315,7 +315,8 @@ function job {
 
 function migrate {
   run_headless "bundle exec rake db:migrate"
-  run_headless "bundle exec rake kor:index:drop kor:index:create kor:index:refresh"
+  run_headless "bundle exec rails r 'Kor::Elastic.drop_index ; Kor::Elastic.create_index'"
+  run_headless "bundle exec bin/kor index-all"
 }
 
 
@@ -323,7 +324,8 @@ function migrate {
 
 function init {
   run_headless "bundle exec rake db:create db:setup"
-  run_headless "bundle exec rake kor:index:drop kor:index:create kor:index:refresh"
+  run_headless "bundle exec rails r 'Kor::Elastic.drop_index ; Kor::Elastic.create_index'"
+  run_headless "bundle exec bin/kor index-all"
 }
 
 
