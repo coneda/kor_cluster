@@ -40,7 +40,7 @@ function create {
   tpl $CLUSTER_SCRIPT_ROOT/templates/ssmtp.conf $DIR/ssmtp/ssmtp.conf
   tpl $CLUSTER_SCRIPT_ROOT/templates/revaliases $DIR/ssmtp/revaliases
 
-  tpl $CLUSTER_SCRIPT_ROOT/templates/nginx.conf $CLUSTER_ROOT/nginx/nginx.conf
+  tpl $CLUSTER_SCRIPT_ROOT/templates/nginx.conf $DIR/nginx/nginx.conf
   
   mkdir -p $DIR/elastic/log
   mkdir -p $DIR/elastic/data
