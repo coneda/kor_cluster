@@ -38,6 +38,9 @@ RUN rbenv install `cat /opt/kor/ruby-version` && \
 ADD kor.tar /opt/kor/current
 WORKDIR /opt/kor/current
 
+RUN mkdir log && \
+  touch log/production.log
+
 RUN bash -c "bundle install --path /opt/kor/bundle --without development test" kor && \
     ln -sfn /opt/kor/shared/database.yml /opt/kor/current/config/database.yml && \
     ln -sfn /opt/kor/shared/kor.yml /opt/kor/current/config/kor.yml && \
@@ -47,4 +50,5 @@ RUN bash -c "bundle install --path /opt/kor/bundle --without development test" k
     ln -sfn /opt/kor/shared/data /opt/kor/current/data && \
     ln -sfn /opt/kor/shared/log /opt/kor/current/log
 
-RUN bash -c "bundle exec rake assets:precompile" kor
+RUN mkdir -p /opt/kor/shared/data && \
+    bash -c "RAILS_GROUPS=assets bundle exec rake assets:precompile" kor

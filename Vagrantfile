@@ -7,8 +7,7 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "kor_cluster", :primary => true do |kor|
-    kor.vm.box = "coneda/ubuntu14:04"
-    kor.vm.box_url = "http://download.coneda.net/coneda_ubuntu14.04.box"
+    kor.vm.box = "ubuntu/trusty64"
 
     kor.vm.provision :shell, path: "vagrant.sh", args: "setup_docker"
 

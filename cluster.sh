@@ -350,6 +350,7 @@ function start {
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
     --link ${CLUSTER_NAME}_mongo:mongo \
+    --env SECRET_KEY_BASE=`pwgen 100 1` \
     --add-host dockerhost:`docker_host_ip` \
     --publish $PORT:8000 \
     docker.coneda.net:443/kor:$VERSION \
