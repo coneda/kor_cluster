@@ -14,6 +14,11 @@ To combine the services and potentially use a joint SSL certificate, a nginx
 server is also part of a cluster. Its configuration is based on existing
 instances and their setup.
 
+## Requirements
+
+* docker
+* pwgen
+
 ## Usage
 
 The script features several commands which all operate either on the cluster or

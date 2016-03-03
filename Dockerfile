@@ -52,3 +52,5 @@ RUN bash -c "bundle install --path /opt/kor/bundle --without development test" k
 
 RUN mkdir -p /opt/kor/shared/data && \
     bash -c "RAILS_GROUPS=assets bundle exec rake assets:precompile" kor
+
+ENV RAILS_SERVE_STATIC_FILES true

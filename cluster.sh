@@ -341,7 +341,7 @@ function start {
     --link ${CLUSTER_NAME}_mongo:mongo \
     --add-host dockerhost:`docker_host_ip` \
     docker.coneda.net:443/kor:$VERSION \
-    /bin/bash -c "bundle exec rake jobs:work" kor
+    /bin/bash -c "bundle exec bin/delayed_job -n 2 run" kor
 
   sudo docker run -d \
     --name ${CLUSTER_NAME}_instance_$NAME \
