@@ -355,7 +355,7 @@ function start {
     --add-host dockerhost:`docker_host_ip` \
     --publish $PORT:8000 \
     docker.coneda.net:443/kor:$VERSION \
-    /bin/bash -c "bundle exec puma -e production -p 8000 -t 2 config.ru" kor
+    /bin/bash -c "bundle exec puma -e production -p 8000 -t 2:2 config.ru" kor
 }
 
 
