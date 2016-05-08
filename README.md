@@ -19,6 +19,20 @@ instances and their setup.
 * docker
 * pwgen
 
+## Running tests
+
+To run the tests, you can bring up the test host with vagrant (this takes a few
+minutes on most machines)
+
+    vagrant up
+
+and then run the tests (the first time you run this, the docker daemon will
+download the sample ConedaKOR containers which might also take a while):
+
+    vagrant ssh -c "cd /vagrant && bundle exec rspec"
+
+... which should just output green stuff :)
+
 ## Usage
 
 The script features several commands which all operate either on the cluster or
@@ -91,8 +105,8 @@ Upgrading the cluster script can simply be done by pulling this git repository.
 Since the setup is based on Docker, instance upgrades are as simple as possible.
 Basically the old container is stopped and the new one is fired up. In between,
 sometimes the database schema needs to be altered or the layout of stored files.
-Given an instance is on version `1.9.1`, upgrading it to `1.9.2` would be done like
-this:
+Given an instance is on version `1.9.1`, upgrading it to `1.9.2` would be done
+like this:
 
     /var/my_kor_cluster/instances/instance.sh upgrade v1.9.2
 

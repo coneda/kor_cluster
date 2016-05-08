@@ -2,4 +2,4 @@ repository.txt
 deploy.config.sh
 tmp/*
 .vagrant
-
+.byebug_history

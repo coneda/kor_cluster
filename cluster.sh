@@ -20,7 +20,7 @@ fi
 source $CLUSTER_SCRIPT_ROOT/lib.sh
 
 
-# Initialize mysql, elasticsearch and mongodb
+# Initialize mysql, elasticsearch
 
 function create {
   local DIR=${1-.}
@@ -32,7 +32,6 @@ function create {
   ln -sfn $CALL_ROOT/cluster.sh $DIR/cluster.sh
 
   mkdir -p $DIR/mysql
-  mkdir -p $DIR/mongo
   mkdir -p $DIR/elastic
   mkdir -p $DIR/ssmtp
   mkdir -p $DIR/nginx
@@ -54,7 +53,7 @@ function create {
 }
 
 
-# Start mysql, elasticsearch and mongodb
+# Start mysql, elasticsearch
 
 function generate_vhost {
   INSTANCE_NAME=$1
@@ -79,6 +78,7 @@ function start_proxy {
     -v $CLUSTER_ROOT/nginx:/etc/nginx \
     -p $CLUSTER_PORT:$CLUSTER_PORT \
     $LINK_PARAM \
+    --restart unless-stopped \
     nginx
 }
 
@@ -101,23 +101,19 @@ function boot {
     --name ${CLUSTER_NAME}_mysql \
     --volume $CALL_ROOT/mysql:/var/lib/mysql \
     --env MYSQL_ROOT_PASSWORD=$DB_PASSWORD \
+    --restart unless-stopped \
     mysql
-
-  sudo docker run -d \
-    --name ${CLUSTER_NAME}_mongo \
-    --volume $CALL_ROOT/mongo:/data/db \
-    mongo \
-    mongod --smallfiles
 
   sudo docker run -d \
     --name ${CLUSTER_NAME}_elastic \
     --volume $CALL_ROOT/elastic:/data \
-    elasticsearch:1.5.2
+    --restart unless-stopped \
+    elasticsearch:2.2.1
 }
 
 function shutdown {
-  sudo docker stop ${CLUSTER_NAME}_mysql ${CLUSTER_NAME}_mongo ${CLUSTER_NAME}_elastic
-  sudo docker rm ${CLUSTER_NAME}_mysql ${CLUSTER_NAME}_mongo ${CLUSTER_NAME}_elastic
+  sudo docker stop ${CLUSTER_NAME}_mysql ${CLUSTER_NAME}_elastic
+  sudo docker rm ${CLUSTER_NAME}_mysql ${CLUSTER_NAME}_elastic
 }
 
 
@@ -197,14 +193,6 @@ function snapshot {
     mysqldump --defaults-extra-file=/host/mysql.cnf $DB_NAME \
     | gzip -c > $CALL_ROOT/db.sql.gz
 
-  # This is only necessary for kor-1.8 and below, re-enable if necessary
-  # sudo docker run --rm \
-  #   --link ${CLUSTER_NAME}_mongo:mongo \
-  #   --volume $CALL_ROOT:/host \
-  #   mongo \
-  #   mongoexport --host mongo --db $DB_NAME --collection attachments --jsonArray \
-  #   | gzip -c > $CALL_ROOT/mongo.json.gz
-
   tar czf $DIR/$NAME.$TS.$VERSION.tar.gz -C $CALL_ROOT --exclude=instance.sh --exclude=config.sh --exclude=database.yml --exclude=mysql.cnf .
   rm $CALL_ROOT/db.sql.gz
 
@@ -232,15 +220,6 @@ function import {
     --volume $CALL_ROOT:/host \
     mysql \
     mysql --defaults-extra-file=/host/mysql.cnf $DB_NAME
-
-  # This is only necessary for kor-1.8 and below, re-enable if necessary
-  # if [ -f $CALL_ROOT/mongo.json.gz ]; then
-  #   zcat $CALL_ROOT/mongo.json.gz | sudo docker run --rm -i \
-  #     --link ${CLUSTER_NAME}_mongo:mongo \
-  #     --volume $CALL_ROOT:/host \
-  #     mongo \
-  #     mongoimport --drop --host mongo --db $DB_NAME --collection attachments --jsonArray
-  # fi
 
   rm $CALL_ROOT/db.sql.gz
   rm -rf $CALL_ROOT.old
@@ -275,7 +254,6 @@ function run {
     --volume $CLUSTER_ROOT/ssmtp:/etc/ssmtp \
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
-    --link ${CLUSTER_NAME}_mongo:mongo \
     --add-host dockerhost:`docker_host_ip` \
     docker.coneda.net:443/kor:$VERSION \
     /bin/bash -c "$COMMAND" kor
@@ -290,7 +268,6 @@ function run_headless {
     --volume $CLUSTER_ROOT/ssmtp:/etc/ssmtp \
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
-    --link ${CLUSTER_NAME}_mongo:mongo \
     --add-host dockerhost:`docker_host_ip` \
     docker.coneda.net:443/kor:$VERSION \
     /bin/bash -c "$COMMAND" kor
@@ -304,7 +281,6 @@ function job {
     --volume $CLUSTER_ROOT/ssmtp:/etc/ssmtp \
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
-    --link ${CLUSTER_NAME}_mongo:mongo \
     --add-host dockerhost:`docker_host_ip` \
     docker.coneda.net:443/kor:$VERSION \
     /bin/bash -c "$COMMAND" kor
@@ -338,8 +314,8 @@ function start {
     --volume $CLUSTER_ROOT/ssmtp:/etc/ssmtp \
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
-    --link ${CLUSTER_NAME}_mongo:mongo \
     --add-host dockerhost:`docker_host_ip` \
+    --restart unless-stopped \
     docker.coneda.net:443/kor:$VERSION \
     /bin/bash -c "bundle exec bin/delayed_job -n 2 run" kor
 
@@ -349,11 +325,11 @@ function start {
     --volume $CLUSTER_ROOT/ssmtp:/etc/ssmtp \
     --link ${CLUSTER_NAME}_mysql:mysql \
     --link ${CLUSTER_NAME}_elastic:elastic \
-    --link ${CLUSTER_NAME}_mongo:mongo \
     --env SECRET_KEY_BASE=`pwgen 100 1` \
     --env RAILS_SERVE_STATIC_FILES=true \
     --add-host dockerhost:`docker_host_ip` \
     --publish $PORT:8000 \
+    --restart unless-stopped \
     docker.coneda.net:443/kor:$VERSION \
     /bin/bash -c "bundle exec puma -e production -p 8000 -t 2:2 config.ru" kor
 }
