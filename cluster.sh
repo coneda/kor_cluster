@@ -6,7 +6,7 @@ SCRIPT_PATH=`readlink -m $0`
 CLUSTER_SCRIPT_ROOT="$( cd "$( dirname "$SCRIPT_PATH" )" && pwd )"
 CALL_ROOT="$( cd "$( dirname "$0" )" && pwd )"
 CLUSTER_ROOT=`cd "$CALL_ROOT"; pwd`
-if [ -d $CALL_ROOT/instances ]; then
+if [ ! -d $CALL_ROOT/instances ]; then
   CLUSTER_ROOT=`cd "$CALL_ROOT/../.."; pwd`
 fi
 
